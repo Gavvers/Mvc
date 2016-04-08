@@ -6,6 +6,11 @@
     "emitEntryPoint": true,
     "preserveCompilationContext": true
   },
+  "content": [
+    "wwwroot",
+    "Views",
+    "Shared-Views"
+  ],
   "dependencies": {
     "Microsoft.AspNetCore.Localization": "1.0.0-*",
     "Microsoft.AspNetCore.Mvc": "1.0.0-*",
@@ -33,7 +38,7 @@
         "portable-net451+win8"
       ],
       "dependencies": {
-          "NETStandard.Library": "1.5.0-*"
+        "NETStandard.Library": "1.5.0-*"
       }
     }
   }
