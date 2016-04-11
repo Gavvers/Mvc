@@ -1,7 +1,9 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -44,7 +46,8 @@ namespace Microsoft.AspNetCore.Mvc.Internal
         /// <summary>
         /// Gets an instance of <see cref="DefaultCollectionValidationStrategy"/>.
         /// </summary>
-        public static readonly IValidationStrategy Instance = new DefaultCollectionValidationStrategy();
+        public static readonly DefaultCollectionValidationStrategy Instance = new DefaultCollectionValidationStrategy();
+        private readonly ConcurrentDictionary<Type, MethodInfo> _genericGetEnumeratorCache = new ConcurrentDictionary<Type, MethodInfo>();
 
         private DefaultCollectionValidationStrategy()
         {
@@ -60,9 +63,16 @@ namespace Microsoft.AspNetCore.Mvc.Internal
             return new Enumerator(metadata.ElementMetadata, key, enumerator);
         }
 
-        public static IEnumerator GetEnumeratorForElementType(ModelMetadata metadata, object model)
+        public IEnumerator GetEnumeratorForElementType(ModelMetadata metadata, object model)
         {
-            var getEnumeratorMethod = _getEnumerator.MakeGenericMethod(metadata.ElementType);
+            MethodInfo getEnumeratorMethod;
+            if (!_genericGetEnumeratorCache.TryGetValue(metadata.ElementType, out getEnumeratorMethod))
+            {
+                getEnumeratorMethod = _genericGetEnumeratorCache.AddOrUpdate(
+                        key: metadata.ElementType,
+                        addValueFactory: (type) => _getEnumerator.MakeGenericMethod(type),
+                        updateValueFactory: (type, methodInfo) => methodInfo);
+            }
             return (IEnumerator)getEnumeratorMethod.Invoke(null, new object[] { model });
         }
 
