@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Internal;
 
@@ -12,6 +13,18 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
     /// </summary>
     public class SimpleTypeModelBinder : IModelBinder
     {
+        private readonly TypeConverter _typeConverter;
+
+        public SimpleTypeModelBinder(Type type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            _typeConverter = TypeDescriptor.GetConverter(type);
+        }
+
         /// <inheritdoc />
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {
@@ -32,7 +45,11 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
 
             try
             {
-                var model = valueProviderResult.ConvertTo(bindingContext.ModelType);
+                var value = valueProviderResult.FirstValue;
+
+                var model = !string.IsNullOrWhiteSpace(value)
+                    ? _typeConverter.ConvertFrom(null, valueProviderResult.Culture, value)
+                    : null;
 
                 if (bindingContext.ModelType == typeof(string))
                 {
@@ -67,7 +84,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
             {
                 bindingContext.ModelState.TryAddModelError(
                     bindingContext.ModelName,
-                    exception,
+                    exception.InnerException ?? exception,
                     bindingContext.ModelMetadata);
 
                 // Were able to find a converter for the type but conversion failed.

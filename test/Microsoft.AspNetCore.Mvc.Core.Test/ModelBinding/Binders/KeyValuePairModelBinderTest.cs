@@ -136,7 +136,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
         public async Task KeyValuePairModelBinder_CreatesEmptyCollection_IfIsTopLevelObject()
         {
             // Arrange
-            var binder = new KeyValuePairModelBinder<string, string>(new SimpleTypeModelBinder(), new SimpleTypeModelBinder());
+            var binder = new KeyValuePairModelBinder<string, string>(new SimpleTypeModelBinder(typeof(string)), new SimpleTypeModelBinder(typeof(string)));
 
             var context = CreateContext();
             context.IsTopLevelObject = true;
@@ -167,7 +167,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
         public async Task KeyValuePairModelBinder_DoesNotCreateCollection_IfNotIsTopLevelObject(string prefix)
         {
             // Arrange
-            var binder = new KeyValuePairModelBinder<string, string>(new SimpleTypeModelBinder(), new SimpleTypeModelBinder());
+            var binder = new KeyValuePairModelBinder<string, string>(new SimpleTypeModelBinder(typeof(string)), new SimpleTypeModelBinder(typeof(string)));
 
             var context = CreateContext();
             context.ModelName = ModelNames.CreatePropertyModelName(prefix, "KeyValuePairProperty");

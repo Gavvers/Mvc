@@ -47,7 +47,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
                 { "theModelName", "some-value" }
             };
 
-            var binder = new SimpleTypeModelBinder();
+            var binder = new SimpleTypeModelBinder(destinationType);
 
             // Act
             var result = await binder.BindModelResultAsync(bindingContext);
@@ -73,7 +73,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
             {
                 { "theModelName", string.Empty }
             };
-            var binder = new SimpleTypeModelBinder();
+            var binder = new SimpleTypeModelBinder(destinationType);
 
             // Act
             var result = await binder.BindModelResultAsync(bindingContext);
@@ -98,7 +98,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
                 { "theModelName", "not an integer" }
             };
 
-            var binder = new SimpleTypeModelBinder();
+            var binder = new SimpleTypeModelBinder(typeof(int));
 
             // Act
             var result = await binder.BindModelResultAsync(bindingContext);
@@ -116,7 +116,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
         {
             // Arrange
             var bindingContext = GetBindingContext(typeof(int));
-            var binder = new SimpleTypeModelBinder();
+            var binder = new SimpleTypeModelBinder(typeof(int));
 
             // Act
             var result = await binder.BindModelResultAsync(bindingContext);
@@ -136,7 +136,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
                 { "theModelName", string.Empty }
             };
 
-            var binder = new SimpleTypeModelBinder();
+            var binder = new SimpleTypeModelBinder(typeof(string));
 
             // Act
             var result = await binder.BindModelResultAsync(bindingContext);
@@ -156,7 +156,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
                 { "theModelName", "42" }
             };
 
-            var binder = new SimpleTypeModelBinder();
+            var binder = new SimpleTypeModelBinder(typeof(int));
 
             // Act
             var result = await binder.BindModelResultAsync(bindingContext);
@@ -182,7 +182,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
                 { "theModelName", flagsEnumValue }
             };
 
-            var binder = new SimpleTypeModelBinder();
+            var binder = new SimpleTypeModelBinder(typeof(FlagsEnum));
 
             // Act
             var result = await binder.BindModelResultAsync(bindingContext);
